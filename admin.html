@@ -1,0 +1,605 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>لوحة التحكم — النجم السوري</title>
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⚙️</text></svg>">
+<style>
+* { margin:0; padding:0; box-sizing:border-box; }
+body { font-family:'Segoe UI',Tahoma,sans-serif; background:#0a1430; color:#c9d1e8; min-height:100vh; }
+
+/* Login Screen */
+#loginScreen {
+  display:flex; align-items:center; justify-content:center;
+  min-height:100vh; padding:20px;
+  background:radial-gradient(ellipse at top,#1a2a5e,#0a1430 70%);
+}
+.login-box {
+  background:rgba(255,255,255,0.05);
+  border:1px solid rgba(212,175,55,0.3);
+  border-radius:20px; padding:40px 30px;
+  max-width:400px; width:100%;
+  backdrop-filter:blur(15px);
+}
+.login-box h1 { color:#f4d03f; text-align:center; margin-bottom:10px; font-size:1.8em; }
+.login-box p { text-align:center; opacity:0.7; margin-bottom:25px; font-size:0.9em; }
+.login-box input {
+  width:100%; padding:14px 18px;
+  background:rgba(0,0,0,0.3);
+  border:1px solid rgba(212,175,55,0.3);
+  border-radius:12px; color:#fff;
+  font-size:1em; margin-bottom:15px;
+  font-family:monospace;
+  direction:ltr;
+}
+.login-box input:focus {
+  outline:none; border-color:#d4af37;
+  box-shadow:0 0 0 3px rgba(212,175,55,0.2);
+}
+.login-box button {
+  width:100%; padding:14px;
+  background:linear-gradient(135deg,#d4af37,#b8860b);
+  color:#0a1430; border:none;
+  border-radius:12px; font-size:1em;
+  font-weight:700; cursor:pointer;
+  transition:all 0.25s; font-family:inherit;
+}
+.login-box button:hover {
+  transform:translateY(-2px);
+  box-shadow:0 8px 25px rgba(212,175,55,0.5);
+}
+.login-note {
+  font-size:0.82em; opacity:0.6;
+  text-align:center; margin-top:15px;
+  line-height:1.6;
+}
+
+/* Main Panel */
+#mainPanel { display:none; min-height:100vh; }
+.topbar {
+  background:rgba(10,20,48,0.95);
+  border-bottom:1px solid rgba(212,175,55,0.3);
+  padding:15px 20px;
+  display:flex; align-items:center; justify-content:space-between;
+  position:sticky; top:0; z-index:100;
+}
+.topbar h2 { color:#f4d03f; font-size:1.1em; }
+.topbar-actions { display:flex; gap:10px; }
+.topbar-actions button {
+  padding:8px 16px; border-radius:20px;
+  border:1px solid rgba(212,175,55,0.4);
+  background:transparent; color:#c9d1e8;
+  cursor:pointer; font-size:0.85em;
+  font-family:inherit; transition:all 0.2s;
+}
+.topbar-actions button:hover {
+  background:rgba(212,175,55,0.15);
+  border-color:#d4af37; color:#f4d03f;
+}
+.logout-btn { color:#ff6b6b !important; border-color:rgba(255,107,107,0.4) !important; }
+.logout-btn:hover { background:rgba(255,107,107,0.15) !important; border-color:#ff6b6b !important; }
+
+.container { max-width:1100px; margin:0 auto; padding:25px 20px; }
+
+/* Tabs */
+.tabs { display:flex; gap:8px; margin-bottom:25px; flex-wrap:wrap; }
+.tab {
+  padding:12px 22px; border-radius:25px;
+  background:rgba(255,255,255,0.05);
+  border:1px solid rgba(212,175,55,0.2);
+  color:#c9d1e8; cursor:pointer;
+  transition:all 0.25s; font-family:inherit;
+  font-size:0.9em; font-weight:600;
+}
+.tab.active {
+  background:linear-gradient(135deg,#d4af37,#b8860b);
+  color:#0a1430; border-color:#d4af37;
+}
+.tab:hover:not(.active) { background:rgba(212,175,55,0.1); }
+
+/* Panels */
+.panel { display:none; }
+.panel.active { display:block; animation:fade 0.3s; }
+@keyframes fade { from{opacity:0;transform:translateY(10px);} to{opacity:1;transform:translateY(0);} }
+
+/* Cards */
+.card {
+  background:rgba(255,255,255,0.04);
+  border:1px solid rgba(212,175,55,0.2);
+  border-radius:16px; padding:25px;
+  margin-bottom:20px;
+}
+.card h3 {
+  color:#f4d03f; margin-bottom:18px;
+  font-size:1.1em;
+  display:flex; align-items:center; gap:8px;
+}
+
+/* Form */
+.form-group { margin-bottom:18px; }
+.form-group label {
+  display:block; color:#c9d1e8;
+  margin-bottom:8px; font-size:0.88em;
+  font-weight:600;
+}
+.form-group input,
+.form-group textarea,
+.form-group select {
+  width:100%; padding:13px 16px;
+  background:rgba(0,0,0,0.3);
+  border:1px solid rgba(212,175,55,0.25);
+  border-radius:10px; color:#fff;
+  font-size:0.95em; font-family:inherit;
+  transition:border-color 0.2s;
+}
+.form-group textarea {
+  min-height:120px; resize:vertical;
+  font-family:monospace; direction:ltr;
+  text-align:left; line-height:1.6;
+}
+.form-group input:focus,
+.form-group textarea:focus {
+  outline:none; border-color:#d4af37;
+  box-shadow:0 0 0 3px rgba(212,175,55,0.15);
+}
+
+.btn-submit {
+  width:100%; padding:15px;
+  background:linear-gradient(135deg,#d4af37,#b8860b);
+  color:#0a1430; border:none;
+  border-radius:12px; font-size:1em;
+  font-weight:800; cursor:pointer;
+  transition:all 0.25s; font-family:inherit;
+  margin-top:10px;
+}
+.btn-submit:hover:not(:disabled) {
+  transform:translateY(-2px);
+  box-shadow:0 8px 25px rgba(212,175,55,0.5);
+}
+.btn-submit:disabled { opacity:0.6; cursor:not-allowed; }
+
+/* File List */
+.file-list { max-height:500px; overflow-y:auto; }
+.file-item {
+  display:flex; align-items:center; justify-content:space-between;
+  padding:14px 18px; margin-bottom:8px;
+  background:rgba(255,255,255,0.03);
+  border:1px solid rgba(212,175,55,0.15);
+  border-radius:10px; cursor:pointer;
+  transition:all 0.2s;
+}
+.file-item:hover {
+  background:rgba(212,175,55,0.08);
+  border-color:#d4af37;
+}
+.file-name { color:#f4d03f; font-weight:600; font-size:0.9em; }
+.file-meta { color:#c9d1e8; opacity:0.6; font-size:0.78em; }
+
+/* Notification */
+.notify {
+  position:fixed; top:20px; left:50%;
+  transform:translateX(-50%) translateY(-100px);
+  padding:14px 24px; border-radius:12px;
+  font-weight:700; z-index:2000;
+  transition:transform 0.4s;
+  box-shadow:0 10px 30px rgba(0,0,0,0.3);
+}
+.notify.show { transform:translateX(-50%) translateY(0); }
+.notify.success { background:#4caf50; color:#fff; }
+.notify.error { background:#f44336; color:#fff; }
+.notify.info { background:#2196f3; color:#fff; }
+
+/* Image preview */
+.img-preview {
+  max-width:200px; border-radius:10px;
+  margin-top:10px; border:2px solid rgba(212,175,55,0.3);
+}
+
+/* Loading */
+.loading-spinner {
+  display:inline-block; width:16px; height:16px;
+  border:2px solid rgba(255,255,255,0.3);
+  border-top-color:#fff; border-radius:50%;
+  animation:spin 0.7s linear infinite;
+  vertical-align:middle; margin-left:8px;
+}
+@keyframes spin { to { transform:rotate(360deg); } }
+</style>
+</head>
+<body>
+
+<!-- ========= LOGIN ========= -->
+<div id="loginScreen">
+  <div class="login-box">
+    <h1>⚙️ لوحة التحكم</h1>
+    <p>النجم السوري — إدارة الموقع</p>
+    <input type="password" id="tokenInput" placeholder="GitHub Token (ghp_...)" autocomplete="off">
+    <button onclick="login()">🔓 دخول</button>
+    <p class="login-note">
+      التوكن يُخزَّن في متصفحك فقط<br>
+      وبيانات الموقع الحساسة لا تُنشر أبدًا
+    </p>
+  </div>
+</div>
+
+<!-- ========= MAIN ========= -->
+<div id="mainPanel">
+  <div class="topbar">
+    <h2>⚙️ لوحة التحكم</h2>
+    <div class="topbar-actions">
+      <button onclick="viewSite()">🌐 عرض الموقع</button>
+      <button class="logout-btn" onclick="logout()">🚪 خروج</button>
+    </div>
+  </div>
+
+  <div class="container">
+    <div class="tabs">
+      <button class="tab active" onclick="showTab('appsTab', event)">📱 التطبيقات</button>
+      <button class="tab" onclick="showTab('pagesTab', event)">📝 الصفحات</button>
+      <button class="tab" onclick="showTab('imagesTab', event)">🖼️ الصور</button>
+      <button class="tab" onclick="showTab('filesTab', event)">📁 الملفات</button>
+    </div>
+
+    <!-- APPS TAB -->
+    <div class="panel active" id="appsTab">
+      <div class="card">
+        <h3>➕ إضافة تطبيق جديد</h3>
+        <div class="form-group">
+          <label>اسم التطبيق</label>
+          <input type="text" id="appName" placeholder="مثال: قاموسي">
+        </div>
+        <div class="form-group">
+          <label>الوصف</label>
+          <input type="text" id="appDesc" placeholder="وصف مختصر...">
+        </div>
+        <div class="form-group">
+          <label>الأيقونة (إيموجي)</label>
+          <input type="text" id="appIcon" placeholder="📖" maxlength="4">
+        </div>
+        <div class="form-group">
+          <label>رابط المشروع (إن وُجد)</label>
+          <input type="text" id="appLink" placeholder="/Qamoosi/" dir="ltr">
+        </div>
+        <button class="btn-submit" id="addAppBtn" onclick="addApp()">
+          💾 إضافة التطبيق إلى الصفحة
+        </button>
+      </div>
+    </div>
+
+    <!-- PAGES TAB -->
+    <div class="panel" id="pagesTab">
+      <div class="card">
+        <h3>📝 تحرير ملف</h3>
+        <div class="form-group">
+          <label>اسم الملف</label>
+          <input type="text" id="editFileName" placeholder="index.html" dir="ltr">
+        </div>
+        <button class="btn-submit" onclick="loadFile()">📥 تحميل المحتوى</button>
+      </div>
+      <div class="card" id="editorCard" style="display:none">
+        <h3>✏️ المحتوى</h3>
+        <div class="form-group">
+          <textarea id="editContent" rows="20"></textarea>
+        </div>
+        <button class="btn-submit" onclick="saveFile()">💾 حفظ في GitHub</button>
+      </div>
+    </div>
+
+    <!-- IMAGES TAB -->
+    <div class="panel" id="imagesTab">
+      <div class="card">
+        <h3>🖼️ رفع صورة</h3>
+        <div class="form-group">
+          <label>اختر صورة (حتى 2 ميجابايت)</label>
+          <input type="file" id="imageInput" accept="image/*" onchange="previewImage()">
+          <img id="imgPreview" class="img-preview" style="display:none">
+        </div>
+        <div class="form-group">
+          <label>اسم الملف (بالإنكليزية)</label>
+          <input type="text" id="imageName" placeholder="logo.png" dir="ltr">
+        </div>
+        <button class="btn-submit" onclick="uploadImage()">📤 رفع إلى GitHub</button>
+      </div>
+    </div>
+
+    <!-- FILES TAB -->
+    <div class="panel" id="filesTab">
+      <div class="card">
+        <h3>📁 ملفات الموقع</h3>
+        <button class="btn-submit" onclick="listFiles()" style="margin-bottom:15px">🔄 تحديث القائمة</button>
+        <div class="file-list" id="fileList">
+          <p style="opacity:0.6;text-align:center;padding:20px">اضغط "تحديث القائمة" لعرض الملفات</p>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<div class="notify" id="notify"></div>
+
+<script>
+// ==== CONFIG ====
+const OWNER = 'starmaen';
+const REPO = 'starmaen.github.io';
+const BRANCH = 'main';
+const API = 'https://api.github.com';
+
+let TOKEN = '';
+let SHAS = {}; // cache file SHAs
+
+// ==== AUTH ====
+function login() {
+  const t = document.getElementById('tokenInput').value.trim();
+  if (!t) { notify('الرجاء إدخال التوكن', 'error'); return; }
+  // تحقق من التوكن
+  fetch(`${API}/user`, { headers: { 'Authorization': `token ${t}` } })
+    .then(r => { if (!r.ok) throw new Error(); return r.json(); })
+    .then(user => {
+      TOKEN = t;
+      localStorage.setItem('gh_token', t);
+      document.getElementById('loginScreen').style.display = 'none';
+      document.getElementById('mainPanel').style.display = 'block';
+      notify(`أهلاً ${user.login}`, 'success');
+    })
+    .catch(() => notify('توكن غير صالح', 'error'));
+}
+
+function logout() {
+  localStorage.removeItem('gh_token');
+  location.reload();
+}
+
+// Auto login
+window.addEventListener('load', () => {
+  const t = localStorage.getItem('gh_token');
+  if (t) {
+    document.getElementById('tokenInput').value = t;
+    login();
+  }
+});
+
+// ==== TABS ====
+function showTab(id, e) {
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  e.target.classList.add('active');
+}
+
+function viewSite() { window.open('/', '_blank'); }
+
+// ==== NOTIFY ====
+function notify(msg, type = 'info') {
+  const n = document.getElementById('notify');
+  n.textContent = msg;
+  n.className = 'notify show ' + type;
+  setTimeout(() => n.classList.remove('show'), 3500);
+}
+
+// ==== GITHUB API ====
+async function getFile(path) {
+  const r = await fetch(`${API}/repos/${OWNER}/${REPO}/contents/${path}?ref=${BRANCH}`, {
+    headers: { 'Authorization': `token ${TOKEN}` }
+  });
+  if (!r.ok) return null;
+  const data = await r.json();
+  SHAS[path] = data.sha;
+  return data;
+}
+
+async function putFile(path, content, message) {
+  const body = {
+    message: message || `Update ${path}`,
+    content: btoa(unescape(encodeURIComponent(content))),
+    branch: BRANCH
+  };
+  if (SHAS[path]) body.sha = SHAS[path];
+
+  const r = await fetch(`${API}/repos/${OWNER}/${REPO}/contents/${path}`, {
+    method: 'PUT',
+    headers: {
+      'Authorization': `token ${TOKEN}`,
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify(body)
+  });
+  if (!r.ok) {
+    const err = await r.json();
+    throw new Error(err.message || 'فشل الرفع');
+  }
+  return await r.json();
+}
+
+// ==== ADD APP ====
+async function addApp() {
+  const name = document.getElementById('appName').value.trim();
+  const desc = document.getElementById('appDesc').value.trim();
+  const icon = document.getElementById('appIcon').value.trim() || '📱';
+  const link = document.getElementById('appLink').value.trim();
+
+  if (!name) { notify('اسم التطبيق مطلوب', 'error'); return; }
+
+  const btn = document.getElementById('addAppBtn');
+  btn.disabled = true;
+  btn.innerHTML = 'جارٍ الإضافة...<span class="loading-spinner"></span>';
+
+  try {
+    // 1. جلب index.html
+    const fileData = await getFile('index.html');
+    if (!fileData) throw new Error('index.html غير موجود');
+    const html = decodeURIComponent(escape(atob(fileData.content)));
+
+    // 2. بناء بطاقة جديدة
+    const newCard = `
+    <!-- تطبيق: ${name} -->
+    <div class="app-card fade-in">
+      <div class="app-icon">${icon}</div>
+      <h3>${name}</h3>
+      <p>${desc}</p>
+      <div class="app-actions">
+        ${link ? `<a href="${link}" class="btn btn-primary">📖 فتح الموقع</a>` : ''}
+        <a href="#" class="btn btn-outline">ℹ️ التفاصيل</a>
+      </div>
+    </div>
+`;
+
+    // 3. ابحث عن بطاقة "قريباً" واستبدلها، أو أضف قبل نهاية apps-grid
+    let newHtml;
+    if (html.includes('<!-- قريباً -->')) {
+      const placeholder = /<!-- قريباً -->[\s\S]*?<\/div>\s*<\/div>\s*(?=<\/div>\s*<\/section>)/;
+      // أدخل قبل "قريباً"
+      newHtml = html.replace('<!-- قريباً -->', newCard + '\n    <!-- قريباً -->');
+    } else {
+      // أضف قبل نهاية apps-grid
+      newHtml = html.replace(
+        /(<\/div>\s*<\/section>\s*<!-- DOCS -->)/,
+        newCard + '$1'
+      );
+    }
+
+    if (newHtml === html) throw new Error('لم أستطع تحديد مكان البطاقة');
+
+    // 4. ارفع
+    await putFile('index.html', newHtml, `Add app: ${name}`);
+
+    notify(`✅ تم إضافة "${name}" — سيظهر بعد دقيقة`, 'success');
+    document.getElementById('appName').value = '';
+    document.getElementById('appDesc').value = '';
+    document.getElementById('appIcon').value = '';
+    document.getElementById('appLink').value = '';
+  } catch (e) {
+    notify('خطأ: ' + e.message, 'error');
+  } finally {
+    btn.disabled = false;
+    btn.innerHTML = '💾 إضافة التطبيق إلى الصفحة';
+  }
+}
+
+// ==== EDIT FILE ====
+async function loadFile() {
+  const name = document.getElementById('editFileName').value.trim();
+  if (!name) { notify('أدخل اسم الملف', 'error'); return; }
+
+  try {
+    const data = await getFile(name);
+    if (!data) { notify('الملف غير موجود', 'error'); return; }
+    const content = decodeURIComponent(escape(atob(data.content)));
+    document.getElementById('editContent').value = content;
+    document.getElementById('editorCard').style.display = 'block';
+    notify('تم التحميل', 'success');
+  } catch (e) {
+    notify('خطأ: ' + e.message, 'error');
+  }
+}
+
+async function saveFile() {
+  const name = document.getElementById('editFileName').value.trim();
+  const content = document.getElementById('editContent').value;
+  if (!name) { notify('أدخل اسم الملف', 'error'); return; }
+
+  try {
+    await putFile(name, content, `Edit ${name}`);
+    notify('✅ تم الحفظ — سيظهر بعد دقيقة', 'success');
+  } catch (e) {
+    notify('خطأ: ' + e.message, 'error');
+  }
+}
+
+// ==== IMAGE UPLOAD ====
+let imageBase64 = null;
+let imageExt = 'png';
+
+function previewImage() {
+  const file = document.getElementById('imageInput').files[0];
+  if (!file) return;
+  if (file.size > 2 * 1024 * 1024) {
+    notify('الصورة أكبر من 2 ميجابايت', 'error');
+    return;
+  }
+  imageExt = file.name.split('.').pop().toLowerCase();
+  const reader = new FileReader();
+  reader.onload = (e) => {
+    const b64 = e.target.result.split(',')[1];
+    imageBase64 = b64;
+    const img = document.getElementById('imgPreview');
+    img.src = e.target.result;
+    img.style.display = 'block';
+  };
+  reader.readAsDataURL(file);
+}
+
+async function uploadImage() {
+  if (!imageBase64) { notify('اختر صورة أولاً', 'error'); return; }
+  let name = document.getElementById('imageName').value.trim();
+  if (!name) { notify('أدخل اسم الملف', 'error'); return; }
+  if (!name.includes('.')) name += '.' + imageExt;
+
+  try {
+    const path = 'images/' + name;
+    // تحقق أولاً إن كان المجلد موجودًا بجلب sha (اختياري)
+    try { await getFile(path); } catch (e) {}
+
+    await fetch(`${API}/repos/${OWNER}/${REPO}/contents/${path}`, {
+      method: 'PUT',
+      headers: {
+        'Authorization': `token ${TOKEN}`,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        message: `Upload image: ${name}`,
+        content: imageBase64,
+        branch: BRANCH,
+        ...(SHAS[path] ? { sha: SHAS[path] } : {})
+      })
+    }).then(async r => {
+      if (!r.ok) throw new Error((await r.json()).message);
+    });
+
+    notify(`✅ رُفعت ${name}`, 'success');
+    document.getElementById('imageInput').value = '';
+    document.getElementById('imgPreview').style.display = 'none';
+    document.getElementById('imageName').value = '';
+    imageBase64 = null;
+  } catch (e) {
+    notify('خطأ: ' + e.message, 'error');
+  }
+}
+
+// ==== LIST FILES ====
+async function listFiles() {
+  const list = document.getElementById('fileList');
+  list.innerHTML = '<p style="text-align:center;padding:20px">جارٍ التحميل...</p>';
+  try {
+    const r = await fetch(`${API}/repos/${OWNER}/${REPO}/git/trees/${BRANCH}?recursive=1`, {
+      headers: { 'Authorization': `token ${TOKEN}` }
+    });
+    const data = await r.json();
+    if (!data.tree) throw new Error('فشل جلب القائمة');
+
+    const files = data.tree.filter(f => f.type === 'blob');
+    list.innerHTML = files.map(f => `
+      <div class="file-item" onclick="loadFileFromList('${f.path}')">
+        <div>
+          <div class="file-name">${f.path}</div>
+          <div class="file-meta">${(f.size/1024).toFixed(1)} KB</div>
+        </div>
+        <span style="color:#d4af37">✏️</span>
+      </div>
+    `).join('');
+  } catch (e) {
+    list.innerHTML = '<p style="color:#ff6b6b;text-align:center;padding:20px">' + e.message + '</p>';
+  }
+}
+
+function loadFileFromList(path) {
+  document.getElementById('editFileName').value = path;
+  // انتقل لتبويب الصفحات
+  document.querySelectorAll('.tab')[1].click();
+  setTimeout(loadFile, 100);
+}
+</script>
+
+</body>
+</html>
