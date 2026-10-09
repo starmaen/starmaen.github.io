@@ -7,166 +7,273 @@
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⭐</text></svg>">
 <style>
 * { margin: 0; padding: 0; box-sizing: border-box; }
+html { scroll-behavior: smooth; }
 body {
   font-family: 'Segoe UI', Tahoma, Arial, sans-serif;
-  background: #0a1430;
-  min-height: 100vh; color: #333;
+  background: #0a1430; color: #333;
   overflow-x: hidden;
 }
 
-/* Stars background */
-.stars-bg {
-  position: fixed; inset: 0; z-index: 0;
-  background: radial-gradient(ellipse at top, #1a2a5e 0%, #0a1430 60%);
-  overflow: hidden;
+/* ============ NAVBAR ============ */
+.navbar {
+  position: fixed; top: 0; left: 0; right: 0;
+  background: rgba(10,20,48,0.85);
+  backdrop-filter: blur(15px);
+  z-index: 1000;
+  border-bottom: 1px solid rgba(212,175,55,0.2);
+  transition: all 0.3s;
 }
-.stars-bg::before, .stars-bg::after {
+.navbar-inner {
+  max-width: 1200px; margin: 0 auto;
+  padding: 12px 20px;
+  display: flex; align-items: center; justify-content: space-between;
+}
+.nav-brand {
+  color: #f4d03f; font-weight: 800; font-size: 1.1em;
+  display: flex; align-items: center; gap: 8px;
+  text-decoration: none;
+}
+.nav-brand svg { width: 24px; height: 24px; }
+
+.nav-toggle {
+  background: none; border: none;
+  color: #f4d03f; font-size: 1.8em; cursor: pointer;
+  padding: 5px 10px;
+  transition: transform 0.3s;
+}
+.nav-toggle.open { transform: rotate(90deg); }
+
+.nav-menu {
+  position: absolute; top: 100%; right: 0; left: 0;
+  background: rgba(10,20,48,0.98);
+  backdrop-filter: blur(20px);
+  border-bottom: 1px solid rgba(212,175,55,0.3);
+  max-height: 0; overflow: hidden;
+  transition: max-height 0.4s ease;
+}
+.nav-menu.open { max-height: 500px; }
+.nav-menu a {
+  display: block; padding: 15px 25px;
+  color: #c9d1e8; text-decoration: none;
+  border-bottom: 1px solid rgba(212,175,55,0.1);
+  transition: all 0.25s;
+  font-weight: 500;
+}
+.nav-menu a:hover {
+  background: rgba(212,175,55,0.1);
+  color: #f4d03f;
+  padding-right: 35px;
+}
+
+/* Desktop nav */
+@media (min-width: 768px) {
+  .nav-toggle { display: none; }
+  .nav-menu {
+    position: static; max-height: none;
+    display: flex; background: none;
+    border: none; overflow: visible;
+  }
+  .nav-menu a {
+    padding: 8px 18px;
+    border: none; border-radius: 8px;
+    margin: 0 4px;
+  }
+  .nav-menu a:hover { padding-right: 18px; }
+}
+
+/* ============ HERO ============ */
+.hero {
+  min-height: 100vh;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  text-align: center;
+  padding: 80px 20px 40px;
+  background: radial-gradient(ellipse at 50% 30%, #1a2a5e 0%, #0a1430 60%);
+  position: relative; overflow: hidden;
+}
+.hero::before {
   content: '';
   position: absolute; inset: 0;
   background-image: 
     radial-gradient(2px 2px at 20% 30%, #f4d03f, transparent),
-    radial-gradient(2px 2px at 60% 70%, #fff, transparent),
-    radial-gradient(1px 1px at 50% 50%, #f4d03f, transparent),
+    radial-gradient(1px 1px at 60% 70%, #fff, transparent),
+    radial-gradient(1px 1px at 50% 20%, #f4d03f, transparent),
     radial-gradient(1px 1px at 80% 10%, #fff, transparent),
     radial-gradient(2px 2px at 90% 60%, #f4d03f, transparent),
     radial-gradient(1px 1px at 33% 80%, #fff, transparent),
     radial-gradient(1px 1px at 15% 90%, #f4d03f, transparent),
     radial-gradient(2px 2px at 70% 40%, #fff, transparent);
-  background-size: 200% 200%;
   animation: twinkle 6s infinite alternate;
+  pointer-events: none;
 }
-.stars-bg::after {
-  animation-delay: -3s;
-  background-image: 
-    radial-gradient(1px 1px at 10% 20%, #fff, transparent),
-    radial-gradient(2px 2px at 40% 60%, #f4d03f, transparent),
-    radial-gradient(1px 1px at 75% 25%, #fff, transparent),
-    radial-gradient(1px 1px at 25% 75%, #f4d03f, transparent);
-}
-@keyframes twinkle {
-  from { opacity: 0.4; }
-  to { opacity: 1; }
-}
+@keyframes twinkle { from { opacity: 0.4; } to { opacity: 1; } }
 
-/* Container */
-.wrap { position: relative; z-index: 1; max-width: 900px; margin: 0 auto; padding: 40px 20px; }
-
-/* Hero */
-.hero { text-align: center; padding: 40px 20px 30px; }
 .logo-star {
-  width: 130px; height: 130px; margin: 0 auto 25px;
+  width: 140px; height: 140px; margin-bottom: 25px;
   filter: drop-shadow(0 8px 30px rgba(212,175,55,0.5));
   animation: float 4s ease-in-out infinite;
 }
 @keyframes float {
   0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-10px); }
+  50% { transform: translateY(-12px); }
 }
 
 .brand-name-ar {
-  font-size: 3em; font-weight: 900; letter-spacing: 3px;
-  background: linear-gradient(135deg, #f4d03f 0%, #d4af37 50%, #b8860b 100%);
+  font-size: clamp(2.2em, 8vw, 3.5em);
+  font-weight: 900; letter-spacing: 3px;
+  background: linear-gradient(135deg, #f4d03f, #d4af37, #b8860b);
   -webkit-background-clip: text; -webkit-text-fill-color: transparent;
   background-clip: text;
-  margin-bottom: 5px;
-  animation: fadeDown 0.8s ease-out;
+  margin-bottom: 8px;
 }
 .brand-name-en {
-  font-size: 1.2em; letter-spacing: 6px;
-  color: #c9d1e8; opacity: 0.8;
-  margin-bottom: 15px;
-  animation: fadeDown 0.8s ease-out 0.1s backwards;
+  font-size: 1.1em; letter-spacing: 8px;
+  color: #c9d1e8; opacity: 0.8; margin-bottom: 20px;
 }
 .brand-tagline {
   color: #c9d1e8; font-size: 1.05em;
-  opacity: 0.9; letter-spacing: 1px;
-  animation: fadeDown 0.8s ease-out 0.2s backwards;
+  opacity: 0.9; margin-bottom: 30px;
 }
 .divider {
-  width: 100px; height: 2px;
+  width: 120px; height: 2px;
   background: linear-gradient(90deg, transparent, #d4af37, transparent);
-  margin: 25px auto 0;
+  margin: 0 auto 30px;
 }
 
-@keyframes fadeDown {
-  from { opacity: 0; transform: translateY(-15px); }
-  to { opacity: 1; transform: translateY(0); }
+.scroll-hint {
+  color: #c9d1e8; opacity: 0.6;
+  font-size: 0.9em;
+  animation: bounce 2s infinite;
+}
+@keyframes bounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(8px); }
 }
 
-/* Section title */
+/* ============ SECTIONS ============ */
+.section {
+  padding: 70px 20px;
+  max-width: 1100px; margin: 0 auto;
+}
+.section.dark { background: #0d1b3e; max-width: 100%; }
+.section.dark > .section-inner { max-width: 1100px; margin: 0 auto; }
+
 .section-title {
-  color: #fff; font-size: 1.4em; font-weight: 700;
-  margin: 40px 0 20px;
-  display: flex; align-items: center; gap: 10px;
+  color: #fff; font-size: clamp(1.5em, 5vw, 2em);
+  font-weight: 800; margin-bottom: 12px;
+  display: flex; align-items: center; gap: 12px;
 }
 .section-title::before {
   content: '';
-  width: 4px; height: 24px;
+  width: 5px; height: 30px;
   background: linear-gradient(180deg, #f4d03f, #b8860b);
-  border-radius: 2px;
+  border-radius: 3px;
+}
+.section-subtitle {
+  color: #c9d1e8; opacity: 0.75;
+  margin-bottom: 35px; font-size: 0.95em;
 }
 
-/* App Cards */
-.apps { display: grid; gap: 15px; grid-template-columns: 1fr; }
-@media (min-width: 600px) { .apps { grid-template-columns: 1fr 1fr; } }
+/* ============ APP CARDS ============ */
+.apps-grid {
+  display: grid; gap: 20px;
+  grid-template-columns: 1fr;
+}
+@media (min-width: 640px) { .apps-grid { grid-template-columns: 1fr 1fr; } }
 
 .app-card {
-  background: linear-gradient(135deg, #fff 0%, #f8f9fc 100%);
-  border-radius: 18px; padding: 25px;
-  cursor: pointer; text-decoration: none;
-  box-shadow: 0 8px 25px rgba(0,0,0,0.25);
+  background: linear-gradient(135deg, #fff, #f8f9fc);
+  border-radius: 20px; padding: 25px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.25);
+  border-top: 5px solid #d4af37;
   transition: transform 0.3s, box-shadow 0.3s;
-  border-top: 4px solid #d4af37;
   position: relative; overflow: hidden;
-  display: block; color: inherit;
-}
-.app-card::before {
-  content: '';
-  position: absolute; top: -50%; right: -50%;
-  width: 200%; height: 200%;
-  background: radial-gradient(circle, rgba(212,175,55,0.08) 0%, transparent 60%);
-  transition: transform 0.6s;
-  pointer-events: none;
 }
 .app-card:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 15px 40px rgba(212,175,55,0.35);
+  transform: translateY(-6px);
+  box-shadow: 0 20px 45px rgba(212,175,55,0.35);
 }
-.app-card:hover::before { transform: rotate(45deg); }
-
 .app-icon {
-  width: 60px; height: 60px;
+  width: 65px; height: 65px;
   background: linear-gradient(135deg, #1a2a5e, #0a1430);
-  border-radius: 16px;
+  border-radius: 18px;
   display: flex; align-items: center; justify-content: center;
-  font-size: 28px;
-  margin-bottom: 15px;
-  box-shadow: 0 4px 15px rgba(26,42,94,0.3);
+  font-size: 32px; margin-bottom: 18px;
+  box-shadow: 0 6px 20px rgba(26,42,94,0.35);
 }
 .app-card h3 {
-  color: #1a2a5e; font-size: 1.3em;
-  margin-bottom: 8px; font-weight: 700;
+  color: #1a2a5e; font-size: 1.35em;
+  margin-bottom: 10px; font-weight: 800;
 }
 .app-card p {
   color: #666; font-size: 0.95em;
-  line-height: 1.6;
+  line-height: 1.7; margin-bottom: 20px;
+}
+.app-actions { display: flex; gap: 10px; flex-wrap: wrap; }
+.btn {
+  padding: 11px 22px; border-radius: 25px;
+  text-decoration: none; font-weight: 600;
+  font-size: 0.9em; transition: all 0.25s;
+  display: inline-flex; align-items: center; gap: 6px;
+  border: none; cursor: pointer; font-family: inherit;
+}
+.btn-primary {
+  background: linear-gradient(135deg, #d4af37, #b8860b);
+  color: #0a1430;
+  box-shadow: 0 4px 15px rgba(212,175,55,0.4);
+}
+.btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(212,175,55,0.6);
+}
+.btn-outline {
+  background: transparent; color: #1a2a5e;
+  border: 2px solid #1a2a5e;
+}
+.btn-outline:hover {
+  background: #1a2a5e; color: #fff;
 }
 
-/* Contact */
-.contact-grid {
-  display: grid; gap: 15px; grid-template-columns: 1fr;
-  margin-bottom: 40px;
+/* ============ DOCS ============ */
+.docs-grid {
+  display: grid; gap: 15px;
+  grid-template-columns: 1fr;
 }
-@media (min-width: 600px) { .contact-grid { grid-template-columns: 1fr 1fr; } }
+@media (min-width: 640px) { .docs-grid { grid-template-columns: 1fr 1fr 1fr; } }
+
+.doc-card {
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(212,175,55,0.25);
+  border-radius: 15px; padding: 22px;
+  color: #fff; text-decoration: none;
+  transition: all 0.3s;
+  display: flex; align-items: flex-start; gap: 14px;
+}
+.doc-card:hover {
+  background: rgba(212,175,55,0.12);
+  border-color: #d4af37;
+  transform: translateY(-4px);
+}
+.doc-icon {
+  font-size: 1.8em; flex-shrink: 0;
+}
+.doc-card h4 { color: #f4d03f; margin-bottom: 6px; font-size: 1em; }
+.doc-card p { color: #c9d1e8; opacity: 0.8; font-size: 0.85em; line-height: 1.5; }
+
+/* ============ CONTACT ============ */
+.contact-grid {
+  display: grid; gap: 15px;
+  grid-template-columns: 1fr;
+}
+@media (min-width: 640px) { .contact-grid { grid-template-columns: 1fr 1fr; } }
 
 .contact-card {
-  background: linear-gradient(135deg, rgba(255,255,255,0.05), rgba(255,255,255,0.02));
+  background: linear-gradient(135deg, rgba(255,255,255,0.06), rgba(255,255,255,0.02));
   border: 1px solid rgba(212,175,55,0.3);
-  border-radius: 15px; padding: 20px;
-  display: flex; align-items: center; gap: 15px;
+  border-radius: 15px; padding: 22px;
+  display: flex; align-items: center; gap: 16px;
   text-decoration: none; color: #fff;
   transition: all 0.3s;
-  backdrop-filter: blur(10px);
 }
 .contact-card:hover {
   background: linear-gradient(135deg, rgba(212,175,55,0.15), rgba(212,175,55,0.05));
@@ -174,108 +281,168 @@ body {
   transform: translateY(-3px);
 }
 .contact-icon {
-  width: 45px; height: 45px;
+  width: 50px; height: 50px;
   background: linear-gradient(135deg, #d4af37, #b8860b);
-  border-radius: 12px;
+  border-radius: 14px;
   display: flex; align-items: center; justify-content: center;
-  font-size: 22px; flex-shrink: 0;
+  font-size: 24px; flex-shrink: 0;
 }
-.contact-info { flex: 1; min-width: 0; }
 .contact-info .label {
   color: #c9d1e8; font-size: 0.8em;
-  margin-bottom: 4px; opacity: 0.8;
+  margin-bottom: 5px; opacity: 0.8;
 }
 .contact-info .value {
-  color: #f4d03f; font-size: 0.95em; font-weight: 600;
-  word-break: break-all;
-  font-family: 'Courier New', monospace;
+  color: #f4d03f; font-size: 0.92em; font-weight: 600;
+  word-break: break-all; font-family: 'Courier New', monospace;
 }
 
-/* Footer */
+/* ============ ABOUT ============ */
+.about-text {
+  color: #c9d1e8; font-size: 1.05em;
+  line-height: 2; opacity: 0.9;
+  max-width: 700px;
+}
+.about-text strong { color: #f4d03f; }
+
+/* ============ FOOTER ============ */
 footer {
   text-align: center; color: #c9d1e8;
-  padding: 30px 20px 20px;
-  font-size: 0.88em; opacity: 0.75;
+  padding: 40px 20px 30px;
+  font-size: 0.9em; opacity: 0.7;
   border-top: 1px solid rgba(212,175,55,0.2);
-  margin-top: 20px;
+  background: #0a1430;
 }
 footer .heart { color: #d4af37; }
+
+/* ============ ANIMATIONS ============ */
+.fade-in {
+  opacity: 0; transform: translateY(20px);
+  transition: opacity 0.7s, transform 0.7s;
+}
+.fade-in.visible { opacity: 1; transform: translateY(0); }
 </style>
 </head>
 <body>
 
-<div class="stars-bg"></div>
-
-<div class="wrap">
-
-  <!-- Hero -->
-  <div class="hero">
-    <svg class="logo-star" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
-      <defs>
-        <linearGradient id="starGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-          <stop offset="0%" stop-color="#f4d03f"/>
-          <stop offset="50%" stop-color="#d4af37"/>
-          <stop offset="100%" stop-color="#b8860b"/>
-        </linearGradient>
-        <radialGradient id="starGlow">
-          <stop offset="0%" stop-color="#f4d03f" stop-opacity="0.4"/>
-          <stop offset="100%" stop-color="#f4d03f" stop-opacity="0"/>
-        </radialGradient>
-      </defs>
-
-      <!-- Glow -->
-      <circle cx="100" cy="100" r="90" fill="url(#starGlow)"/>
-
-      <!-- 5-pointed star -->
-      <path d="M 100 20
-               L 122 78 L 185 78 L 134 115 L 154 175
-               L 100 138 L 46 175 L 66 115 L 15 78
-               L 78 78 Z"
-            fill="url(#starGrad)"
-            stroke="#f4d03f" stroke-width="1.5"
-            stroke-linejoin="round"/>
-      
-      <!-- Inner star -->
-      <path d="M 100 60
-               L 112 90 L 145 90 L 118 110 L 128 142
-               L 100 122 L 72 142 L 82 110 L 55 90
-               L 88 90 Z"
-            fill="#0a1430"
-            opacity="0.85"/>
-
-      <!-- Center dot -->
-      <circle cx="100" cy="100" r="5" fill="url(#starGrad)"/>
-    </svg>
-
-    <h1 class="brand-name-ar">النجم السوري</h1>
-    <p class="brand-name-en">SYRIAN STAR</p>
-    <p class="brand-tagline">تطبيقات متنوعة بلمسة احترافية</p>
-    <div class="divider"></div>
+<!-- NAVBAR -->
+<nav class="navbar">
+  <div class="navbar-inner">
+    <a href="#home" class="nav-brand">
+      <svg viewBox="0 0 24 24" fill="#f4d03f">
+        <path d="M12 2 L14.5 9.5 L22 9.5 L16 14 L18.5 21.5 L12 17 L5.5 21.5 L8 14 L2 9.5 L9.5 9.5 Z"/>
+      </svg>
+      النجم السوري
+    </a>
+    <button class="nav-toggle" onclick="toggleNav()">☰</button>
+    <div class="nav-menu" id="navMenu">
+      <a href="#home" onclick="closeNav()">الرئيسية</a>
+      <a href="#apps" onclick="closeNav()">التطبيقات</a>
+      <a href="#docs" onclick="closeNav()">الشروحات</a>
+      <a href="#contact" onclick="closeNav()">تواصل</a>
+      <a href="#about" onclick="closeNav()">حول</a>
+    </div>
   </div>
+</nav>
 
-  <!-- Apps -->
+<!-- HERO -->
+<section class="hero" id="home">
+  <svg class="logo-star" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+      <linearGradient id="starGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+        <stop offset="0%" stop-color="#f4d03f"/>
+        <stop offset="50%" stop-color="#d4af37"/>
+        <stop offset="100%" stop-color="#b8860b"/>
+      </linearGradient>
+      <radialGradient id="starGlow">
+        <stop offset="0%" stop-color="#f4d03f" stop-opacity="0.5"/>
+        <stop offset="100%" stop-color="#f4d03f" stop-opacity="0"/>
+      </radialGradient>
+    </defs>
+    <circle cx="100" cy="100" r="95" fill="url(#starGlow)"/>
+    <path d="M 100 20 L 122 78 L 185 78 L 134 115 L 154 175 L 100 138 L 46 175 L 66 115 L 15 78 L 78 78 Z"
+          fill="url(#starGrad)" stroke="#f4d03f" stroke-width="1.5" stroke-linejoin="round"/>
+    <path d="M 100 60 L 112 90 L 145 90 L 118 110 L 128 142 L 100 122 L 72 142 L 82 110 L 55 90 L 88 90 Z"
+          fill="#0a1430" opacity="0.85"/>
+    <circle cx="100" cy="100" r="5" fill="url(#starGrad)"/>
+  </svg>
+
+  <h1 class="brand-name-ar">النجم السوري</h1>
+  <p class="brand-name-en">SYRIAN STAR</p>
+  <p class="brand-tagline">تطبيقات متنوعة بلمسة احترافية</p>
+  <div class="divider"></div>
+  <p class="scroll-hint">↓ تصفح الأسفل ↓</p>
+</section>
+
+<!-- APPS -->
+<section class="section" id="apps">
   <h2 class="section-title">تطبيقاتي</h2>
-  <div class="apps">
+  <p class="section-subtitle">تطبيقات أندرويد بأداء عالٍ وواجهات عربية أنيقة</p>
 
-    <a href="/Al-Mustashar/" class="app-card">
+  <div class="apps-grid">
+
+    <!-- التطبيق الأول: المستشار -->
+    <div class="app-card fade-in">
       <div class="app-icon">⚖️</div>
       <h3>المستشار</h3>
-      <p>المكتبة القانونية الذكية — بحث فوري في القوانين والمواد القانونية</p>
-    </a>
+      <p>المكتبة القانونية الذكية — بحث فوري في القوانين السورية، عرض المواد كاملة، مع تحديث تلقائي للقوانين الجديدة.</p>
+      <div class="app-actions">
+        <a href="/Al-Mustashar/" class="btn btn-primary">📖 فتح الموقع</a>
+        <a href="#" class="btn btn-outline">ℹ️ التفاصيل</a>
+      </div>
+    </div>
 
-    <div class="app-card" style="cursor:default;opacity:0.6">
+    <!-- قريباً -->
+    <div class="app-card fade-in" style="opacity:0.65">
       <div class="app-icon">✨</div>
       <h3>قريباً</h3>
-      <p>تطبيق جديد قادم — ترقّبوا المزيد من الإبداعات</p>
+      <p>تطبيق جديد قادم — ترقّبوا المزيد من الإبداعات في الأيام المقبلة.</p>
+      <div class="app-actions">
+        <span class="btn btn-outline" style="cursor:not-allowed">قيد التطوير</span>
+      </div>
     </div>
 
   </div>
+</section>
 
-  <!-- Contact -->
+<!-- DOCS -->
+<section class="section dark" id="docs">
+  <div class="section-inner">
+    <h2 class="section-title">الشروحات والدلائل</h2>
+    <p class="section-subtitle">كل ما تحتاج لمعرفته عن التطبيقات</p>
+
+    <div class="docs-grid">
+      <a href="/Al-Mustashar/" class="doc-card fade-in">
+        <div class="doc-icon">📚</div>
+        <div>
+          <h4>دليل المستشار</h4>
+          <p>كيفية البحث عن القوانين والمواد</p>
+        </div>
+      </a>
+      <a href="#" class="doc-card fade-in">
+        <div class="doc-icon">🔧</div>
+        <div>
+          <h4>كيفية التثبيت</h4>
+          <p>خطوات تثبيت التطبيقات على أندرويد</p>
+        </div>
+      </a>
+      <a href="#" class="doc-card fade-in">
+        <div class="doc-icon">❓</div>
+        <div>
+          <h4>الأسئلة الشائعة</h4>
+          <p>إجابات لأكثر الأسئلة تكرارًا</p>
+        </div>
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- CONTACT -->
+<section class="section" id="contact">
   <h2 class="section-title">تواصل معي</h2>
-  <div class="contact-grid">
+  <p class="section-subtitle">يسعدني استقبال استفساراتكم واقتراحاتكم</p>
 
-    <a href="mailto:starsyria2500@gmail.com" class="contact-card">
+  <div class="contact-grid">
+    <a href="mailto:starsyria2500@gmail.com" class="contact-card fade-in">
       <div class="contact-icon">📧</div>
       <div class="contact-info">
         <div class="label">البريد الإلكتروني</div>
@@ -283,21 +450,57 @@ footer .heart { color: #d4af37; }
       </div>
     </a>
 
-    <a href="mailto:star1741965@gmail.com" class="contact-card">
+    <a href="mailto:star1741965@gmail.com" class="contact-card fade-in">
       <div class="contact-icon">📧</div>
       <div class="contact-info">
         <div class="label">البريد الإلكتروني</div>
         <div class="value">star1741965@gmail.com</div>
       </div>
     </a>
-
   </div>
+</section>
 
-  <footer>
-    <p>صُنع بـ <span class="heart">★</span> — النجم السوري &copy; 2026</p>
-  </footer>
+<!-- ABOUT -->
+<section class="section dark" id="about">
+  <div class="section-inner">
+    <h2 class="section-title">حول</h2>
+    <div class="about-text fade-in">
+      <p>
+        <strong>النجم السوري</strong> مشروع تطبيقات عربية متنوعة، يهدف إلى تقديم أدوات رقمية
+        مفيدة للمستخدم العربي بأداء عالٍ وواجهات أنيقة.
+      </p>
+      <p style="margin-top:15px">
+        نبدأ بتطبيق <strong>المستشار القانوني</strong>، ونتوسع تدريجيًا إلى مجالات أخرى.
+        كل التطبيقات <strong>مجانية</strong> وتعمل بدون إعلانات مزعجة.
+      </p>
+    </div>
+  </div>
+</section>
 
-</div>
+<!-- FOOTER -->
+<footer>
+  <p>صُنع بـ <span class="heart">★</span> — النجم السوري &copy; 2026</p>
+</footer>
+
+<script>
+// Toggle mobile nav
+function toggleNav() {
+  document.getElementById('navMenu').classList.toggle('open');
+  document.querySelector('.nav-toggle').classList.toggle('open');
+}
+function closeNav() {
+  document.getElementById('navMenu').classList.remove('open');
+  document.querySelector('.nav-toggle').classList.remove('open');
+}
+
+// Fade in on scroll
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) entry.target.classList.add('visible');
+  });
+}, { threshold: 0.15 });
+document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
+</script>
 
 </body>
 </html>
