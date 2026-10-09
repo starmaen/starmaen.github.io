@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>النجم السوري — Syrian Star</title>
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⭐</text></svg>">
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+  font-family: 'Segoe UI', Tahoma, Arial, sans-serif;
+  background: #0a1430;
+  min-height: 100vh; color: #333;
+  overflow-x: hidden;
+}
+
+/* Stars background */
+.stars-bg {
+  position: fixed; inset: 0; z-index: 0;
+  background: radial-gradient(ellipse at top, #1a2a5e 0%, #0a1430 60%);
+  overflow: hidden;
+}
+.stars-bg::before, .stars-bg::after {
+  content: '';
+  position: absolute; inset: 0;
+  background-image: 
+    radial-gradient(2px 2px at 20% 30%, #f4d03f, transparent),
+    radial-gradient(2px 2px at 60% 70%, #fff, transparent),
+    radial-gradient(1px 1px at 50% 50%, #f4d03f, transparent),
+    radial-gradient(1px 1px at 80% 10%, #fff, transparent),
+    radial-gradient(2px 2px at 90% 60%, #f4d03f, transparent),
+    radial-gradient(1px 1px at 33% 80%, #fff, transparent),
+    radial-gradient(1px 1px at 15% 90%, #f4d03f, transparent),
+    radial-gradient(2px 2px at 70% 40%, #fff, transparent);
+  background-size: 200% 200%;
+  animation: twinkle 6s infinite alternate;
+}
+.stars-bg::after {
+  animation-delay: -3s;
+  background-image: 
+    radial-gradient(1px 1px at 10% 20%, #fff, transparent),
+    radial-gradient(2px 2px at 40% 60%, #f4d03f, transparent),
+    radial-gradient(1px 1px at 75% 25%, #fff, transparent),
+    radial-gradient(1px 1px at 25% 75%, #f4d03f, transparent);
+}
+@keyframes twinkle {
+  from { opacity: 0.4; }
+  to { opacity: 1; }
+}
+
+/* Container */
+.wrap { position: relative; z-index: 1; max-width: 900px; margin: 0 auto; padding: 40px 20px; }
+
+/* Hero */
+.hero { text-align: center; padding: 40px 20px 30px; }
+.logo-star {
+  width: 130px; height: 130px; margin: 0 auto 25px;
+  filter: drop-shadow(0 8px 30px rgba(212,175,55,0.5));
+  animation: float 4s ease-in-out infinite;
+}
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-10px); }
+}
+
+.brand-name-ar {
+  font-size: 3em; font-weight: 900; letter-spacing: 3px;
+  background: linear-gradient(135deg, #f4d03f 0%, #d4af37 50%, #b8860b 100%);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin-bottom: 5px;
+  animation: fadeDown 0.8s ease-out;
+}
+.brand-name-en {
+  font-size: 1.2em; letter-spacing: 6px;
+  color: #c9d1e8; opacity: 0.8;
+  margin-bottom: 15px;
+  animation: fadeDown 0.8s ease-out 0.1s backwards;
+}
+.brand-tagline {
+  color: #c9d1e8; font-size: 1.05em;
+  opacity: 0.9; letter-spacing: 1px;
+  animation: fadeDown 0.8s ease-out 0.2s backwards;
+}
+.divider {
+  width: 100px; height: 2px;
+  background: linear-gradient(90deg, transparent, #d4af37, transparent);
+  margin: 25px auto 0;
+}
+
+@keyframes fadeDown {
+  from { opacity: 0; transform: translateY(-15px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Section title */
+.section-title {
+  color: #fff; font-size: 1.4em; font-weight: 700;
+  margin: 40px 0 20px;
+  display: flex; align-items: center; gap: 10px;
+}
+.section-title::before {
+  content: '';
+  width: 4px; height: 24px;
+  background: linear-gradient(180deg, #f4d03f, #b8860b);
+  border-radius: 2px;
+}
+
+/* App Cards */
+.apps { display: grid; gap: 15px; grid-template-columns: 1fr; }
+@media (min-width: 600px) { .apps { grid-template-columns: 1fr 1fr; } }
+
+.app-card {
+  background: linear-gradient(135deg, #fff 0%, #f8f9fc 100%);
+  border-radius: 18px; padding: 25px;
+  cursor: pointer; text-decoration: none;
+  box-shadow: 0 8px 25px rgba(0,0,0,0.25);
+  transition: transform 0.3s, box-shadow 0.3s;
+  border-top: 4px solid #d4af37;
+  position: relative; overflow: hidden;
+  display: block; color: inherit;
+}
+.app-card::before {
+  content: '';
+  position: absolute; top: -50%; right: -50%;
+  width: 200%; height: 200%;
+  background: radial-gradient(circle, rgba(212,175,55,0.08) 0%, transparent 60%);
+  transition: transform 0.6s;
+  pointer-events: none;
+}
+.app-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 15px 40px rgba(212,175,55,0.35);
+}
+.app-card:hover::before { transform: rotate(45deg); }
+
+.app-icon {
+  width: 60px; height: 60px;
+  background: linear-gradient(135deg, #1a2a5e, #0a1430);
+  border-radius: 16px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 28px;
+  margin-bottom: 15px;
+  box-shadow: 0 4px 15px rgba(26,42,94,0.3);
+}
+.app-card h3 {
+  color: #1a2a5e; font-size: 1.3em;
+  margin-bottom: 8px; font-weight: 700;
+}
+.app-card p {
+  color: #666; font-size: 0.95em;
+  line-height: 1.6;
+}
+
+/* Contact */
+.contact-grid {
+  display: grid; gap: 15px; grid-template-columns: 1fr;
+  margin-bottom: 40px;
+}
+@media (min-width: 600px) { .contact-grid { grid-template-columns: 1fr 1fr; } }
+
+.contact-card {
+  background: linear-gradient(135deg, rgba(255,255,255,0.05), rgba(255,255,255,0.02));
+  border: 1px solid rgba(212,175,55,0.3);
+  border-radius: 15px; padding: 20px;
+  display: flex; align-items: center; gap: 15px;
+  text-decoration: none; color: #fff;
+  transition: all 0.3s;
+  backdrop-filter: blur(10px);
+}
+.contact-card:hover {
+  background: linear-gradient(135deg, rgba(212,175,55,0.15), rgba(212,175,55,0.05));
+  border-color: #d4af37;
+  transform: translateY(-3px);
+}
+.contact-icon {
+  width: 45px; height: 45px;
+  background: linear-gradient(135deg, #d4af37, #b8860b);
+  border-radius: 12px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 22px; flex-shrink: 0;
+}
+.contact-info { flex: 1; min-width: 0; }
+.contact-info .label {
+  color: #c9d1e8; font-size: 0.8em;
+  margin-bottom: 4px; opacity: 0.8;
+}
+.contact-info .value {
+  color: #f4d03f; font-size: 0.95em; font-weight: 600;
+  word-break: break-all;
+  font-family: 'Courier New', monospace;
+}
+
+/* Footer */
+footer {
+  text-align: center; color: #c9d1e8;
+  padding: 30px 20px 20px;
+  font-size: 0.88em; opacity: 0.75;
+  border-top: 1px solid rgba(212,175,55,0.2);
+  margin-top: 20px;
+}
+footer .heart { color: #d4af37; }
+</style>
+</head>
+<body>
+
+<div class="stars-bg"></div>
+
+<div class="wrap">
+
+  <!-- Hero -->
+  <div class="hero">
+    <svg class="logo-star" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <linearGradient id="starGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stop-color="#f4d03f"/>
+          <stop offset="50%" stop-color="#d4af37"/>
+          <stop offset="100%" stop-color="#b8860b"/>
+        </linearGradient>
+        <radialGradient id="starGlow">
+          <stop offset="0%" stop-color="#f4d03f" stop-opacity="0.4"/>
+          <stop offset="100%" stop-color="#f4d03f" stop-opacity="0"/>
+        </radialGradient>
+      </defs>
+
+      <!-- Glow -->
+      <circle cx="100" cy="100" r="90" fill="url(#starGlow)"/>
+
+      <!-- 5-pointed star -->
+      <path d="M 100 20
+               L 122 78 L 185 78 L 134 115 L 154 175
+               L 100 138 L 46 175 L 66 115 L 15 78
+               L 78 78 Z"
+            fill="url(#starGrad)"
+            stroke="#f4d03f" stroke-width="1.5"
+            stroke-linejoin="round"/>
+      
+      <!-- Inner star -->
+      <path d="M 100 60
+               L 112 90 L 145 90 L 118 110 L 128 142
+               L 100 122 L 72 142 L 82 110 L 55 90
+               L 88 90 Z"
+            fill="#0a1430"
+            opacity="0.85"/>
+
+      <!-- Center dot -->
+      <circle cx="100" cy="100" r="5" fill="url(#starGrad)"/>
+    </svg>
+
+    <h1 class="brand-name-ar">النجم السوري</h1>
+    <p class="brand-name-en">SYRIAN STAR</p>
+    <p class="brand-tagline">تطبيقات متنوعة بلمسة احترافية</p>
+    <div class="divider"></div>
+  </div>
+
+  <!-- Apps -->
+  <h2 class="section-title">تطبيقاتي</h2>
+  <div class="apps">
+
+    <a href="/Al-Mustashar/" class="app-card">
+      <div class="app-icon">⚖️</div>
+      <h3>المستشار</h3>
+      <p>المكتبة القانونية الذكية — بحث فوري في القوانين والمواد القانونية</p>
+    </a>
+
+    <div class="app-card" style="cursor:default;opacity:0.6">
+      <div class="app-icon">✨</div>
+      <h3>قريباً</h3>
+      <p>تطبيق جديد قادم — ترقّبوا المزيد من الإبداعات</p>
+    </div>
+
+  </div>
+
+  <!-- Contact -->
+  <h2 class="section-title">تواصل معي</h2>
+  <div class="contact-grid">
+
+    <a href="mailto:starsyria2500@gmail.com" class="contact-card">
+      <div class="contact-icon">📧</div>
+      <div class="contact-info">
+        <div class="label">البريد الإلكتروني</div>
+        <div class="value">starsyria2500@gmail.com</div>
+      </div>
+    </a>
+
+    <a href="mailto:star1741965@gmail.com" class="contact-card">
+      <div class="contact-icon">📧</div>
+      <div class="contact-info">
+        <div class="label">البريد الإلكتروني</div>
+        <div class="value">star1741965@gmail.com</div>
+      </div>
+    </a>
+
+  </div>
+
+  <footer>
+    <p>صُنع بـ <span class="heart">★</span> — النجم السوري &copy; 2026</p>
+  </footer>
+
+</div>
+
+</body>
+</html>
