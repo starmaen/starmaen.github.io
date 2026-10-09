@@ -238,6 +238,7 @@ body { font-family:'Segoe UI',Tahoma,sans-serif; background:#0a1430; color:#c9d1
       <button class="tab active" onclick="showTab('appsTab', event)">📱 التطبيقات</button>
       <button class="tab" onclick="showTab('pagesTab', event)">📝 الصفحات</button>
       <button class="tab" onclick="showTab('imagesTab', event)">🖼️ الصور</button>
+      <button class="tab" onclick="showTab('downloadsTab', event)">📦 التحميلات</button>
       <button class="tab" onclick="showTab('filesTab', event)">📁 الملفات</button>
     </div>
 
@@ -300,6 +301,52 @@ body { font-family:'Segoe UI',Tahoma,sans-serif; background:#0a1430; color:#c9d1
           <input type="text" id="imageName" placeholder="logo.png" dir="ltr">
         </div>
         <button class="btn-submit" onclick="uploadImage()">📤 رفع إلى GitHub</button>
+      </div>
+    </div>
+
+    <!-- DOWNLOADS TAB -->
+    <div class="panel" id="downloadsTab">
+      <div class="card">
+        <h3>📦 رفع ملف APK أو ZIP أو أي ملف</h3>
+        <p style="opacity:0.7;font-size:0.85em;margin-bottom:18px">
+          الحد الأقصى: 50 ميجابايت. الملفات الكبيرة قد تفشل الرفع من الجوال.
+        </p>
+        <div class="form-group">
+          <label>اختر ملف</label>
+          <input type="file" id="downloadInput" accept=".apk,.zip,.pdf,.doc,.docx,.rar,.7z" onchange="previewDownload()">
+        </div>
+        <div id="filePreview" style="display:none;padding:12px;background:rgba(212,175,55,0.1);border-radius:10px;margin-bottom:18px">
+          <div style="color:#f4d03f;font-weight:700" id="fileName"></div>
+          <div style="opacity:0.7;font-size:0.85em" id="fileSize"></div>
+        </div>
+        <div class="form-group">
+          <label>اسم الملف بعد الرفع (بالإنكليزية)</label>
+          <input type="text" id="downloadName" placeholder="mustashar-v1.0.apk" dir="ltr">
+        </div>
+        <div class="form-group">
+          <label>المجلد (اختياري)</label>
+          <select id="downloadFolder">
+            <option value="downloads/">downloads/ — عام</option>
+            <option value="downloads/apps/">downloads/apps/ — تطبيقات</option>
+            <option value="downloads/docs/">downloads/docs/ — مستندات</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>وصف الملف (اختياري، يُظهر في السجل)</label>
+          <input type="text" id="downloadDesc" placeholder="مثال: نسخة 1.0 من تطبيق المستشار">
+        </div>
+        <div style="background:rgba(33,150,243,0.1);border-left:3px solid #2196f3;padding:12px;border-radius:8px;margin-bottom:18px;font-size:0.85em">
+          ⚠️ الرفع يستهلك من حصة GitHub. حافظ على الملفات أقل من 50 ميجابايت.
+        </div>
+        <button class="btn-submit" id="uploadDownloadBtn" onclick="uploadDownload()">
+          📤 رفع الملف إلى GitHub
+        </button>
+        <div id="downloadProgress" style="display:none;margin-top:15px;text-align:center">
+          <div style="height:8px;background:rgba(255,255,255,0.1);border-radius:4px;overflow:hidden">
+            <div id="progressBar" style="height:100%;width:0%;background:linear-gradient(90deg,#d4af37,#f4d03f);transition:width 0.3s"></div>
+          </div>
+          <div style="margin-top:8px;font-size:0.85em" id="progressText">جارٍ الرفع...</div>
+        </div>
       </div>
     </div>
 
@@ -595,9 +642,116 @@ async function listFiles() {
 
 function loadFileFromList(path) {
   document.getElementById('editFileName').value = path;
-  // انتقل لتبويب الصفحات
   document.querySelectorAll('.tab')[1].click();
   setTimeout(loadFile, 100);
+}
+
+// ==== DOWNLOADS ====
+let downloadBase64 = null;
+let downloadExt = '';
+
+function previewDownload() {
+  const file = document.getElementById('downloadInput').files[0];
+  if (!file) return;
+  if (file.size > 50 * 1024 * 1024) {
+    notify('الملف أكبر من 50 ميجابايت — قد يفشل الرفع', 'error');
+    return;
+  }
+  downloadExt = file.name.split('.').pop();
+  document.getElementById('fileName').textContent = file.name;
+  document.getElementById('fileSize').textContent = (file.size / 1024 / 1024).toFixed(2) + ' ميجابايت';
+  document.getElementById('filePreview').style.display = 'block';
+
+  // إذا لم يكتب المستخدم اسمًا، استخدم اسم الملف الأصلي
+  if (!document.getElementById('downloadName').value) {
+    document.getElementById('downloadName').value = file.name;
+  }
+
+  const reader = new FileReader();
+  reader.onload = (e) => {
+    downloadBase64 = e.target.result.split(',')[1];
+  };
+  reader.readAsDataURL(file);
+}
+
+async function uploadDownload() {
+  if (!downloadBase64) { notify('اختر ملفًا أولاً', 'error'); return; }
+  let name = document.getElementById('downloadName').value.trim();
+  if (!name) { notify('أدخل اسم الملف', 'error'); return; }
+  if (!name.includes('.')) name += '.' + downloadExt;
+
+  const folder = document.getElementById('downloadFolder').value;
+  const path = folder + name;
+  const desc = document.getElementById('downloadDesc').value.trim();
+
+  const btn = document.getElementById('uploadDownloadBtn');
+  btn.disabled = true;
+  btn.innerHTML = 'جارٍ الرفع...<span class="loading-spinner"></span>';
+
+  document.getElementById('downloadProgress').style.display = 'block';
+  document.getElementById('progressBar').style.width = '30%';
+  document.getElementById('progressText').textContent = 'جارٍ التحقق من الملف...';
+
+  try {
+    // تحقق إن كان الملف موجودًا مسبقًا
+    try { await getFile(path); } catch (e) {}
+
+    document.getElementById('progressBar').style.width = '60%';
+    document.getElementById('progressText').textContent = 'جارٍ الرفع إلى GitHub...';
+
+    const body = {
+      message: desc || `Upload: ${name}`,
+      content: downloadBase64,
+      branch: BRANCH,
+      ...(SHAS[path] ? { sha: SHAS[path] } : {})
+    };
+
+    const r = await fetch(`${API}/repos/${OWNER}/${REPO}/contents/${path}`, {
+      method: 'PUT',
+      headers: {
+        'Authorization': `token ${TOKEN}`,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(body)
+    });
+
+    document.getElementById('progressBar').style.width = '90%';
+
+    if (!r.ok) {
+      const err = await r.json();
+      throw new Error(err.message || 'فشل الرفع');
+    }
+
+    document.getElementById('progressBar').style.width = '100%';
+    document.getElementById('progressText').textContent = '✅ تم الرفع بنجاح!';
+
+    const url = `https://starmaen.github.io/${path}`;
+    notify('✅ رُفع الملف — الرابط: ' + url, 'success');
+
+    // نسخ الرابط للحافظة
+    if (navigator.clipboard) {
+      navigator.clipboard.writeText(url).then(() => {
+        notify('📋 تم نسخ الرابط للحافظة', 'info');
+      });
+    }
+
+    setTimeout(() => {
+      document.getElementById('downloadProgress').style.display = 'none';
+      document.getElementById('filePreview').style.display = 'none';
+      document.getElementById('downloadInput').value = '';
+      document.getElementById('downloadName').value = '';
+      document.getElementById('downloadDesc').value = '';
+      document.getElementById('progressBar').style.width = '0%';
+      downloadBase64 = null;
+    }, 3000);
+
+  } catch (e) {
+    document.getElementById('downloadProgress').style.display = 'none';
+    notify('خطأ: ' + e.message, 'error');
+  } finally {
+    btn.disabled = false;
+    btn.innerHTML = '📤 رفع الملف إلى GitHub';
+  }
 }
 </script>
 
